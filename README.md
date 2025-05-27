@@ -1,5 +1,12 @@
 # Homework 7
 
+## Learning Outcomes
+
+- Writing classes and interfaces
+- Following a UML diagram
+- Using the `super` keyword
+- Practicing encapsulation
+
 Based on this existing assignment written by Prof. Ellen Spertus in Java:
 
 ## Introduction
