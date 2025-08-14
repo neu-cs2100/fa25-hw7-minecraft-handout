@@ -2,211 +2,231 @@
 
 ## Learning Outcomes
 
-- Writing classes and interfaces
+- Practice with abstract classes and interfaces
 - Following a UML diagram
 - Using the `super` keyword
 - Practicing encapsulation
 
-In this assignment, you will:
-- implement tick-based gameplay for both players and non-player characters
+This assignment is to implement Mobs in the style of Minecraft.
+It is not necessary to be familiar with the video game Minecraft.
+It is useful to understand what a Mob is:[(Minecraft Wiki)](https://minecraft.fandom.com/wiki/Mob)
 
-Based on this existing assignment written by Prof. Ellen Spertus in Java:
+## Instructions
 
-## Introduction
+You will get practice with interfaces and generic types by implementing [spawners](https://minecraft.fandom.com/wiki/Spawner). Specifically, you will write a generic type `Spawner[T]`, which creates an entity that spawns (creates) entities of type `T` until the spawner is destroyed. This will enable you to create a `ZombieSpawner` and even a `ZombieSpawnerSpawner`.
 
-The learning goals of this assignment are:
+Feel free to change the `NOISINESS` constant in `Mob.kt` if the noises get annoying.
 
-- Creating a class in Java, including
- - using instance variables
- - writing getters
- - overriding equals() and toString()
- - writing other methods
- - using the visibility modifiers public and private
-- Correctly performing arithmetic on integers
-- Building up strings with String.format()
-- Doing the following within IntelliJ
- - generating javadoc
- - running checkstyle
- - creating and running tests
- - measuring coverage
-- Practicing test-driven development
-- Practicing using git and GitHub
+The initial code should be runnable from `main.py`.
+It may be useful to run it to see what it does.
 
-While working on the assignment, keep track of time spent, sources used, and bugs found by (or in) tests.
+### Problem 1: Selecting an adjacent empty cell
 
-Here are questions it would be appropriate to ask AI (or a search engine):
+Create and implement a new method in `Entity` with this KDoc and signature:
 
-- How do I wrote a good unit test?
-- How do I debug a failing unit test?
-- How should I compare strings in Java?
+    /**
+     * Returns the position of an empty cell adjacent to this entity or
+     * `null` if no such cell exists or if this entity is not on the board.
+     */
+    fun selectAdjacentEmptyCell(): Position?
 
-It would not be appropriate to provide an AI with the javadoc and ask it to generate code or tests.
+For full credit, it needs to behave as described. It does not need to select an
+adjacent cell randomly. For example, it is fine if it always chooses the
+position to the left if it is available. You do need to include the KDoc above
+your code.
 
-Remember: You won't have AI help on the quizzes or in your co-op interviews.
+### Problem 2: Refactoring
 
-## Preparation
-The Learn CS Online lessons (linked in [Resources for Learning Java](https://northeastern.instructure.com/courses/202024/modules/1464167) will help prepare you for this assignment and Quiz 1. The fourth lesson, [Creating Classes](https://www.learncs.online/lessons/java/kotlin_to_java_creating_classes), is most relevant.
+Right now, the `takeDamage()` method is in `LivingEntity`. You will be creating
+a new type of `Entity` that is not a `LivingEntity` but will be capable of
+taking damage. To lay the groundwork, you will complete the interface
+`Damageable`, move `takeDamage()` to it, have `LivingEntity` implement the
+interface, and generalize functions to accept arguments of the more general type
+`Damageable` rather than the specific type `LivingEntity`. You will learn more
+if you keep this big picture in mind when doing each of the following steps.
 
-## Setup
-Accept the assignment from
-In IntelliJ, create a new project using that Git repo (File -> New -> Project from version control)
+1. Open `Damageable.kt`. You should see the declaration of an empty interface,
+   `Damageable`, preceded by KDoc. Do not change the provided KDoc. Everything
+   you do in steps 2-3 should go between the existing curly braces.
+2. Move the KDoc for `takeDamage()` from `LivingEntity` to `Damageable`. Remove
+   all references to properties, since they will not necessarily apply. Replace
+   the word `hearts` with `units`, since not all entities have hearts or status.
+3. Immediately below the KDoc, put the signature of the method. That means
+   that subclasses will have to provide an implementation of the method.
+4. Modify `LivingEntity` to indicate that it implements the `Damageable`
+   interface and that `takeDamage()` overrides a method. (You may need to refer
+   to lecture notes or ask ChatGPT how to do this.)  When you override or
+   implement a method declared elsewhere, you should not provide KDoc.
+5. We want it to be possible to attack anything that is `Damageable`, so, in
+   `LivingEntity`, change the type of the `attack()` parameter to `Damageable`.
+   You will also need to change the reference to `victim.type` because
+   `Damageable` objects do not have a `type`.
+6. Make the corresponding change to the `attack()` parameter in `Mob`.
+7. Make sure your code still compiles and runs and that living entities can
+   still take damage and be killed.
+8. Generate the KDoc and look at the page for `LivingEntity`. See how it
+   indicates that `LivingEntity` implements the `Damageable` interface and what
+   it shows for `takeDamage()`.
 
-## Run Checkstyle
+### Problem 3: Creating a spider spawner
 
-(Video)
+You will create a spider [spawner](https://minecraft.fandom.com/wiki/Monster_Spawner)
+that randomly creates spiders that appear in empty adjacent cells. A Canvas
+video shows the expected behavior.
 
-1. Set up the Checkstyle plugin to use the provided fundies2-checks.xml
-2. Run Checkstyle from within IntelliJ, as shown in the video. You should see 4 errors. Fix them by making the instance variables private.
-3. Rerun Checkstyle to make sure you have fixed all the errors.
-4. Add and commit your changes with the message "Fix checkstyle errors".
-5. Push your changes back to Github.
+1. Create a class `SpiderSpawner` that is a subclass of `Entity`. It should
+   have no parameters. Use the provided `Spawner` image (`SpawnerOnSand.png`).
+   Don't forget to add KDoc (a brief description of the class). You should
+   regenerate and view the KDoc to make sure it appears properly.
+2. Create a private method `spawnIfSpace()` that checks for an adjacent empty
+   cell using `selectAdjacentEmptyCell()`. If it finds one, it constructs a
+   `Spider` and places it at the returned `Position`.
+3. Add a private (non-parameter) property `spawnProbability`, which should
+   be a `Double` in the range 0-1, indicating the probability of spawning a
+   spider on each turn. For example, if it is .75, the per-turn probability
+   would be 75%. You may choose the value.
+4. Create a method `tick()` so that on each turn, a random number between 0 and
+   1 is generated. If the number is less than `spawnProbability`,
+   `spawnIfSpace()` should be called.
+5. For debugging and documentation purposes, have `tick()` and `spawnIfSpace()`
+   call `Game.addText()` with messages indicating the value of the random number
+   and (if `spawnIfSpace()` is called) whether an empty adjacent cell was found
+   and a spider spawned.
+6. Modify the `init` block in `Game` to randomly place a `SpiderSpawner` on the
+   board. Run the program and make sure it behaves as expected. You should
+   see turns in which a spider is spawned and turns in which they are not.
+   **Copy the transcript showing different behaviors into `Summary.md`**.
+7. Modify the `init` block in `Game` to place the `SpiderSpawner` at (0, 0), and
+   place other entities so they block it in, as shown in the video. Increase the
+   spawn probability to 1.0. Make sure it behaves as expected (not spawning
+   spiders when there is no adjacent empty cell). **Copy the transcript into
+   `Summary.md`**. Undo the changes in this step before proceeding to the next
+   problem.
 
-Warning: You might get errors from the Checkstyle plugin. You can ignore them.
+### Problem 4: Making spawners damageable
 
-Note: When your code has a style error, IntelliJ may suggest suppressing the warning. Never accept this option, since it defeats the purpose of running Checkstyle (and won't fool the autograder).
+In Problem 3, you created indestructible spider spawners. In this problem, you
+will make them `Damageable`. Watch the video for this problem on the Canvas page
+to see the expected behavior.
 
-## Generate and Modify Javadoc
+1. Add to `SpiderSpawner` a private mutable property `hardness`, which should be
+   an `Int` of your choice greater than 0, such as 6.
+2. Modify the `SpiderSpawner` class header to indicate that it will implement
+   the `Damageable` interface.
+3. Implement (override) the method `takeDamage()`. (You might want to refer to
+   the implementation in `LivingEntity` for reference.) It should print
+   appropriate messages and reduce the `hardness` value. When `hardness` reaches
+   0, it should call an appropriately named private method that you create that
+   prints that the spawner has been destroyed and removes it from the game.
+   As a reminder, private methods do not require KDoc.
+4. Right now, the player attacks only aggressive mobs that are nearby. Change it
+   so it also attacks all`Damageable` entities. Make sure to exclude the player
+   or it will attack itself! Also make sure the names of your methods are
+   accurate and proper style (verbs).
+5. **Test your code to make sure the player can destroy a spider spawner and
+   save the transcript to `Summary.md`.**
 
-This video demonstrates all the steps for this section.
+### Problem 5: Creating a generic spawner
 
-(Video)
+In this problem, you will complete a generic version of `Spawner` so you are
+able to construct spawners for different types of mobs. Do not delete
+`SpiderSpawner`, which you should keep for reference and grading.
 
-1. Open a terminal window and cd to the directory with the project.
-2. Create a direction (with mkdir) named docs.
-3. Back in IntelliJ, select Tools > Generate JavaDoc...
-4. Make sure "Include test sources" is unchecked. (See picture below.)
-5. Check "Include JDK and library sources in -sourcepath".
-6. For the output directory, specify the directory you created.
-7. Check the box for @author.
-8. Make sure the box is checked for "Open generated documentation in browser".
-9. Click on Generate.
+1. Examine the provided class `Spawner<T>`. Note that the constructor takes two
+   arguments:
+    * The name of the entity type. This enables it to create its own type string
+      (e.g., `"Spider Spawner"`) to pass to the `Entity` constructor.
+    * A no-argument function `spawn()` that constructs a new instance of the
+      class to spawn (e.g., `Spider`) whenever it is called. For example, you
+      could write: `val newEntity = spawn()`
+2. Add these parameters to the constructor and make them properties:
+    * `spawnProbability` (`Double`)
+    * `hardness` (`Int`)
+3. Modify the class header to show that `Spawner<T>` will implement the
+   `Damageable` interface
+4. Copy all the methods from `SpiderSpawner`, replacing occurrences of the
+   string literal `"Spider"` with the property `spawnType`. Replace any calls
+   to the `Spider` constructor with calls to `spawn(). Make other changes as
+   needed.
+5. Make `Spawner` open so it can be extended (subclassed).
 
-(Image)
+### Problem 6: Creating a zombie spawner
 
-10. If everything worked, that should pop open a browser with the generated javadoc. Navigate around it.
-11. Go back to the source code, aind the existing @author tag.
-12. Add another @author tag on the next line with your name.
-13. Regenerate the javadoc and find your name.
-14. Read through the javadoc to see how each method should behave.
-15. Add, commit, and push your changes, with the commit message "Add self as author in javadoc". 
+For this part, you will create a zombie spawner, which will take very little
+code, thanks to the work you did making `Spawner` generic. Watch the video for
+this problem on the Canvas page to see the expected behavior.
 
-## Write Tests
+1. Create a new class `ZombieSpawner` that extends `Spawner<Zombie>`.
+   The new class constructor should take no parameters, but it should
+   pass the necessary arguments to the `Spawner<Zombie>` constructor.
+   These are:
+    * the name of the class being spawned (`"Zombie"`)
+    * an anonymous function of no arguments that returns a new `Zombie`
+    * `spawnProbability` (you can choose the value)
+    * `hardness` (you can choose the value)
+      You should not need to provide any code.
+2. Add code to the `init` block of `Game` to create and randomly place a
+   `ZombieSpawner`. You can remove other placements from the `init` block.
+3. Test out the game and make sure the zombie spawner
+    * spawns zombies
+    * generates appropriate output
+    * can be destroyed
 
-Follow the instructions in the video to see how to create and run tests. 
+   It would be wise to decrease zombies' attack strength or increase the
+   player's number of hearts for testing purposes. You don't need to change
+   them back.
 
-Next, create one or more tests for each of the following methods:
+### Problem 7: Adding another spawner
 
-- getName()
-- getMaxHealth()
-- getHealth()
-- toString()
-- equals()
-- isInjured()
-- isAlive()
-- takeDamage()
-- getCurrentStrength()
+That was a lot work, but now it is easy to add other spawners. Create a
+spawner for an existing (or new) `Mob`. You can get a picture of a mob from
+the [Minecraft Wiki](https://minecraft.fandom.com/wiki/Mob) and
+[convert it from webpng to a 64x64 png online](https://cloudconvert.com/webp-to-png).
+You can pass `null` for the sound file name.
 
-We provide tests of attack().
+Add your new `Spawner` subclass to the game and make sure it works.
 
-You will need enough tests for each method for every path through the code. Test names must:
+### Problem 8: Creating a spawner spawner
 
-- start with the name of the method under test
-- be descriptive
+You should now be able to create a `ZombieSpawnerSpawner`: a spawner that
+creates instances of `ZombieSpawner`. This should take only a few lines of code.
+Test that it works.
 
-For example, good names for tests of toString() would be:
+## Tips
 
-- toStringWorksWhenHealthy
-- toStringWorksWhenInjured
-- toStringWorksWhenDead
+These are the same tips as in Homework 6.
 
-Do not write tests for hashCode(), narrateBattle(), and main(). While it is possible to [test methods with output](https://www.baeldung.com/java-testing-system-out-println), we will not be doing so.
+The #1 tip is to ask for help on Piazza or in office hours if anything is
+unclear.
 
-Be sure to add, commit, and push before proceeding to the next step. Feel free to do so more than once.
+### Building
 
-## Implement Mob
+* Build the KDoc with `Gradle > Tasks > documentation > dokkaHtml`. You can then
+  copy it to a directory outside the project so it won't get deleted when you
+  rebuild the project. This is demonstrated in a Canvas video.
+* Run the application with `Gradle > Tasks > application > run`. For subsequent
+  runs, you can click the green play button (triangle) on the top of IntelliJ,
+  towards the right. This is demonstrated in a Canvas video.
+* If you get a strange compiler error, such as `Changes are not tracked,
+  unable determine incremental changes.`, or strange run time errors, try each
+  of the following (and document your issues in `Summary.md`):
+    * `Gradle > Tasks > build > clean`
+    * `File > Invalidate Caches...Invalidate and Restart`
+* Ignore warnings about deprecated Gradle features as long as your project runs.
 
-Commit and push your changes after doing significant work. For now, don't worry about making your code elegant. You'll have a chance to improve it later.
+### Implementation and Debugging
 
-1. Some of the instance variables are never changed after being initialized in the constructor. Make those instance variables final (the equivalent of Kotlin's val).
-2. Implement the methods that you wrote tests for.
-3. Watch the below video before implementing attack().
-
-(Video)
-
-## Test and Debug
-
-1. Run your tests. Note in Summary.md how many tests pass and how many fail on your first attempt and whether the bugs were in your tests or in the methods under test.
-2. Debug your code and tests. See videos below on how to use the debugger.
-3. Check your code coverage, as shown in the below video. Add tests until you get 100% coverage
-
-(3 videos)
-
-Be sure to commit and push your changes at least once during this stage.
-
-## Refactor
-
-Now, go back and clean up your code. Replace any use of string concatenation with calls to String.format(). You can make changes with confidence because:
-
-- you have tests
-- you can go back to prior versions if necessary
-
-We haven't yet taught how to use git to revert to prior versions of your code. For now, use Github to browse and copy old code if it is needed.
-
-Be sure to fix any checkstyle errors.
-
-## Use the Autograder
-
-Upload your work in progress to Gradescope. The autograder will:
-
-- run Checkstyle
-- run our tests against your code (as on Homework 1)
-- run your tests against instructor-written code that
- - we believe is correct
- - we know to be buggy
-
-To get full credit, your tests must:
-
-- not report any errors in our correct code (unless, of course, it isn't actually correct)
-- report all errors in our buggy code
-- have names that start with the methods they are testing
-
-For example, you would not get credit for catching bugs in toString() if the names of those tests do not start with "toString".
-
-This video explains autograder results.
-
-(Video that Ellen marked as worth redoing)
-
-## Complete Submission
-
-Complete Summary.md and make a final submission.
-
-## Grading Guide
-
-This may be adjusted:
-
-- Autograder: 65
- - Checkstyle: 5
- - Student code passes our tests: 20
-   - Getters: 1
-   - toString: 3
-   - equals: 3
-   - isInjured: 2
-   - isAlive: 2
-   - takeDamage: 2
-   - getCurrentStrength: 3
-   - attack: 4
- - Student code passes student tests: 10
- - Student tests do not report bugs in correct* instructor code: 10
- - Student tests do report bugs in buggy instructor code: 15
- - Coverage: 5
-- Summary.md: 10
-- Code quality: 15
- - Using String.format() instead of string concatenation in Mob: 3 [many students lost these points last year]
- - Test names make clear what is being tested: 2 [many students lost these points last year]
- - Tests are split across multiple methods: 2
- - Behavior of tests does not depend on the order in which they are run: 3
- - No redundant/unneeded code: 3
- - Language features are used appropriately: 2
-- Git usage: 10
- - Writing and committing tests before implementing Mob.java: 5 [many students lost these points last year]
- - Correct use of add, commit, push: 5
+* Always read provided KDoc carefully when implementing a method.
+* If you prefer, you can modify [Player](Player.kt) to be Alex rather than
+  Steve.
+* Text output
+    * If the game grid uses up too much of your screen for you to see the
+      messages in the text area, you can:
+        - Change the constant `NUM_ROWS` in [MinecraftSpawner.kt](Homework9Game.kt).
+        - View the text in IntelliJ's `Run` pane.
+    * You may find it useful to call `clearText()` from `Game.tick()`.
+    * You can print debugging messages by calling `Game.addText()`.
+* If you make use of the `Random` library, make sure `kotlin.random.Random` is
+  imported, not `java.util.Random`.
+* The [Minecraft Wiki](https://minecraft.fandom.com/wiki/Minecraft_Wiki) is
+  a useful resource.
