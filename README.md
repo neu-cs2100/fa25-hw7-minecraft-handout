@@ -7,6 +7,9 @@
 - Using the `super` keyword
 - Practicing encapsulation
 
+In this assignment, you will:
+- implement tick-based gameplay for both players and non-player characters
+
 Based on this existing assignment written by Prof. Ellen Spertus in Java:
 
 ## Introduction
