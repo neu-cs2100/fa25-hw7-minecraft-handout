@@ -1,5 +1,7 @@
 # Homework 7
 
+**Note: This repository is for viewing only. Do not work on the assignment using this repository -- the actual course assignments will be provided to you via Pawtograder.**
+
 ## Learning Outcomes
 
 - Practice with abstract classes and interfaces
