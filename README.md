@@ -1,6 +1,7 @@
-# Homework 7
+> [!CAUTION]
+> This repository is for viewing only. Do not work on the assignment using this repository -- the actual course assignments will be provided to you via Pawtograder.
 
-**Note: This repository is for viewing only. Do not work on the assignment using this repository -- the actual course assignments will be provided to you via Pawtograder.**
+# Homework 7
 
 ## Learning Outcomes
 
