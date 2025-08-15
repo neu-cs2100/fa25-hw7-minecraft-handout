@@ -30,6 +30,9 @@ adjacent cell randomly. For example, it is fine if it always chooses the
 position to the left if it is available. You do need to include the documentation above
 your code.
 
+UML diagram at this point:
+<img width="458" height="467" alt="added one method" src="https://github.com/user-attachments/assets/dd19d085-d911-4423-ba8c-ff3e4f80b58b" />
+
 ### Problem 2: Refactoring
 
 Right now, the `take_damage()` method is in `LivingEntity`. You will be creating
@@ -58,6 +61,10 @@ learn more if you keep this big picture in mind when doing each of the following
 6. Make the corresponding change to the `attack()` parameter in `Mob`.
 7. Make sure your code still runs and that living entities can still take 
    damage and be killed.
+
+UML diagram at this point:
+<img width="458" height="467" alt="add Damageable interface" src="https://github.com/user-attachments/assets/b8f1faf1-82b6-40b8-80aa-a2675a92e6a6" />
+
 
 ### Problem 3: Creating a spider spawner
 
@@ -91,6 +98,10 @@ that randomly creates spiders that appear in empty adjacent cells.
    into `Summary.md`**. Undo the changes in this step before proceeding to the next
    problem.
 
+UML diagram at this point:
+<img width="555" height="229" alt="add SpiderSpawner" src="https://github.com/user-attachments/assets/1c665102-1ae3-4730-aa7c-9f193be0c1f6" />
+
+
 ### Problem 4: Making spawners damageable
 
 In Problem 3, you created indestructible spider spawners. In this problem, you
@@ -114,6 +125,10 @@ will make them `Damageable`.
 5. **Test your code to make sure the player can destroy a spider spawner and
    save the transcript to `Summary.md`.**
 
+UML diagram at this point:
+<img width="507" height="242" alt="SpiderSpawner is damageable" src="https://github.com/user-attachments/assets/168608fe-ec76-4355-9483-828a9dee11fa" />
+
+
 ### Problem 5: Creating a generic spawner
 
 In this problem, you will complete a generic version of `Spawner` so you are
@@ -136,6 +151,10 @@ able to construct spawners for different types of mobs. Do not delete
    string literal `"Spider"` with the property `spawn_type`. Replace any calls
    to the `Spider` constructor with calls to `spawn()`. Make other changes as
    needed.
+
+UML diagram at this point:
+<img width="503" height="324" alt="Generic Spawner" src="https://github.com/user-attachments/assets/ae124e6a-907b-477d-9bc6-b274ba1d4d3b" />
+
 
 ### Problem 6: Creating a zombie spawner
 
@@ -161,6 +180,10 @@ code, thanks to the work you did making `Spawner` generic.
    It would be wise to decrease zombies' attack strength or increase the
    player's number of hearts for testing purposes. You don't need to change
    them back.
+
+UML diagram at this point:
+<img width="481" height="329" alt="ZombieSpawner" src="https://github.com/user-attachments/assets/b0ed35de-1935-4b1a-a91e-4af0091b9250" />
+
 
 ### Problem 7: Adding another spawner
 
