@@ -6,7 +6,7 @@ from game import Game
 from living_entity import LivingEntity
 from status import Status
 
-NOISINESS: float = 0.1
+NOISINESS: float = 0.5
 
 class Behavior(Enum):
     PASSIVE = "Passive"
@@ -38,7 +38,7 @@ class Mob(LivingEntity):
             self.sound: Optional[Any] = None
         else:
             # Assuming minim has a load_file method
-            self.sound = None if Mob.minim is None else Mob.minim.load_file(f"data/sounds/{sound_file_name}")
+            self.sound = None if Mob.minim is None else Mob.minim.Sound(f"data/sounds/{sound_file_name}")
     
     @property
     def is_aggressive(self) -> bool:
@@ -72,7 +72,6 @@ class Mob(LivingEntity):
         
         if self.sound is not None:
             self.sound.play()
-            self.sound.rewind()
     
     def tick(self) -> None:
         """Update the mob's behavior each game tick."""

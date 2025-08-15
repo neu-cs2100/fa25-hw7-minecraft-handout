@@ -1,5 +1,7 @@
 from abc import ABC, abstractmethod
-from typing import Any
+from typing import Any, Optional
+
+from position import Position
 
 class Entity(ABC):
     """
@@ -48,3 +50,14 @@ class Entity(ABC):
     def __str__(self) -> str:
         """String representation of the entity."""
         return self.type
+    
+    def select_adjacent_empty_cell(self) -> Optional[Position]:
+        """
+        Returns the position of an empty cell adjacent to this entity or
+        None if no adjacent empty cell exists or if this entity is not on
+        the board.
+        """
+        from game import Game
+        position = Game.GAME.get_position(self)
+        return None
+    

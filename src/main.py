@@ -28,14 +28,12 @@ class GameApplication:
     """Main game application class."""
     
     def __init__(self) -> None:
-        from game import Game
-        Game()
 
         pygame.init()
         self.screen: Surface = pygame.display.set_mode(
             (GRID_WIDTH, int(GRID_HEIGHT + TEXTAREA_HEIGHT))
         )
-        pygame.display.set_caption("Fundies Homework 9")
+        pygame.display.set_caption("Minecraft Mobs")
         
         # Load font
         try:
@@ -44,15 +42,18 @@ class GameApplication:
             # Fallback to default font if custom font not found
             self.font = pygame_font.Font(None, int(FONT_SIZE))
         
-        # Initialize audio system (equivalent to minim)
+        # Initialize audio system
         pygame.mixer.init()
         
         # Set up Mob audio system
         from mob import Mob
-        Mob.minim = pygame.mixer  # Or your preferred audio system
+        Mob.minim = pygame.mixer
         
         self.clock: pygame.time.Clock = pygame.time.Clock()
         self.running: bool = True
+
+        from game import Game
+        Game()
     
     def handle_events(self) -> None:
         """Handle pygame events."""

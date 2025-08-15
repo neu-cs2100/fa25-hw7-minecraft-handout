@@ -1,10 +1,10 @@
 from abc import ABC
-from enum import Enum
 import random
 
 from entity import Entity
 from game import Game
 from status import Status
+from damageable import Damageable
 
 FIGHTING_RANGE: float = 3.0  # Distance within which entities can fight
 
